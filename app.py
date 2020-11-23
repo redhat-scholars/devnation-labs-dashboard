@@ -139,9 +139,7 @@ def upload_cluster():
                             print(e)
                 i += 1
             print(data)
-    clusters = Cluster.query.all()
-    users = User.query.all()
-    return render_template("admin.html", clusters=clusters, users=users)
+    return redirect("/admin")
 
 @app.route("/user/upload", methods=["POST"])
 def upload_user():
@@ -171,9 +169,7 @@ def upload_user():
                             print(e)
                 i += 1
             print(data)
-    clusters = Cluster.query.all()
-    users = User.query.all()
-    return render_template("admin.html", clusters=clusters, users=users)
+    return redirect("/admin")
 
 @app.route("/cluster/update", methods=["POST"])
 def update():
@@ -186,7 +182,7 @@ def update():
     except Exception as e:
         print("Couldn't update cluster assigned")
         print(e)
-    return redirect("/")
+    return redirect("/admin")
 
 
 @app.route("/user/delete", methods=["POST"])
