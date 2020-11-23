@@ -40,7 +40,7 @@ Open at your Web browser the following link http://127.0.0.1:8080
 ### Get MariaDB
 
 ```
-oc new-app mariadb-persistent -e DATABASE_SERVICE_NAME=mariadb -e MYSQL_USER=mariadb -e MYSQL_PASSWORD=mariadb -e MYSQL_ROOT_PASSWORD=mariadb -e MYSQL_DATABASE=cluster_booking
+oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mariadb -p MYSQL_PASSWORD=mariadb -p MYSQL_ROOT_PASSWORD=mariadb -p MYSQL_DATABASE=cluster_booking
 ```
 
 ### Run on OCP (upload from local directory)
