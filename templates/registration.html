@@ -1,0 +1,37 @@
+{% extends 'base-user.html' %}
+
+
+{% block title %} Your Cluster {% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Cluster details:</h1>
+
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Login URL</th>
+          <th scope="col">Username</th>
+          <th scope="col">Password</th>
+          <th scope="col">Workshop URL</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr>
+            <td>
+                <a href="{{cluster.login_url}}" target="_blank">Login URL</a>
+            </td>
+            <td>
+                {{cluster.username}}
+            </td>
+            <td>
+                {{cluster.password}}
+            </td>
+            <td>
+                <a href="{{cluster.workshop_url}}" target="_blank">Workshop URL</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+{% endblock %}

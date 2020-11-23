@@ -1,0 +1,21 @@
+{% extends 'base-user.html' %}
+
+
+{% block title %} Get a Cluster! {% endblock %}
+
+{% block body %}
+
+
+<div class="container" style="max-width: 450px;">
+  <h1> Get a Cluster!</h1>
+  <br>
+      <form method="POST" action="/user/assign">
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+</div>
+{% endblock %}

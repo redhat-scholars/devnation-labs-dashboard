@@ -1,0 +1,101 @@
+{% extends 'base-admin.html' %}
+
+
+{% block title %} Get a Cluster! {% endblock %}
+
+{% block body %}
+
+
+<div class="container">
+    <h1>Add Cluster CSV</h1>
+    <form action="/cluster/upload" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="fileToUpload">Upload generated CSV for clusters</label>
+        <input type="file" class="form-control-file" id="fileToUpload" name="fileupload">
+      </div>
+      <button type="submit" class="btn btn-primary mb-2">Upload</button>
+    </form>
+
+
+
+    <h1>Clusters: {{ clusters|length }}</h1>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Geo</th>
+          <th scope="col">Assigned to</th>
+          <th scope="col">Workshop URL</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for cluster in clusters %}
+        <tr>
+          <td>
+            {{cluster.id}}
+          </td>
+          <td>
+	          {{cluster.geo}}
+          </td>
+          <td>
+	          {{cluster.assigned}}
+          </td>
+          <td>
+	          <a href="{{cluster.workshop_url}}">Workshop URL</a>
+          </td>
+          <td>
+            <form method="POST" action="/cluster/delete" style="display: inline">
+              <input type="hidden" value="{{cluster.id}}" name="id">
+              <input type="submit" value="Delete">
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+  <br>
+    <h1>Add Registration CSV</h1>
+
+    <form action="/user/upload" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="fileToUpload">Upload event registered user from exported CSV</label>
+        <input type="file" class="form-control-file" id="fileToUpload" name="fileupload">
+      </div>
+      <button type="submit" class="btn btn-primary mb-2">Upload</button>
+    </form>
+    <h1>Users: {{ users|length }}</h1>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Email</th>
+          <th scope="col">Name</th>
+          <th scope="col">Geo</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for user in users %}
+        <tr>
+          <td>
+            {{user.email}}
+          </td>
+          <td>
+            {{user.name}}
+          </td>
+          <td>
+            {{user.geo}}
+          </td>
+          <td>
+            <form method="POST" action="/user/delete" style="display: inline">
+              <input type="hidden" value="{{user.email}}" name="email">
+              <input type="submit" value="Delete">
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+ </div>
+ {% endblock %}
