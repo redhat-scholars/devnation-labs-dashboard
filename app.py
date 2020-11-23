@@ -178,7 +178,7 @@ def upload_user():
 @app.route("/cluster/update", methods=["POST"])
 def update():
     try:
-        assigned = request.form.get("newtitle")
+        assigned = request.form.get("assigned")
         id = request.form.get("id")
         cluster = Cluster.query.filter_by(id=id).first()
         cluster.assigned = assigned

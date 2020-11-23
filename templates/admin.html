@@ -3,6 +3,7 @@
 
 {% block title %} Get a Cluster! {% endblock %}
 
+
 {% block body %}
 
 
@@ -39,7 +40,11 @@
 	          {{cluster.geo}}
           </td>
           <td>
-	          {{cluster.assigned}}
+            <form method="POST" action="/cluster/update" style="display: inline">
+              <input value="{{cluster.assigned}}" name="assigned">
+              <input type="hidden" value="{{cluster.id}}" name="id">
+              <input type="submit" value="Assign">
+            </form>
           </td>
           <td>
 	          <a href="{{cluster.workshop_url}}">Workshop URL</a>
