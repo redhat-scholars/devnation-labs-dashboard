@@ -175,16 +175,16 @@ def upload_user():
     users = User.query.all()
     return render_template("admin.html", clusters=clusters, users=users)
 
-@app.route("/update", methods=["POST"])
+@app.route("/cluster/update", methods=["POST"])
 def update():
     try:
-        newtitle = request.form.get("newtitle")
-        oldtitle = request.form.get("oldtitle")
-        cluster = Cluster.query.filter_by(title=oldtitle).first()
-        cluster.title = newtitle
+        assigned = request.form.get("newtitle")
+        id = request.form.get("id")
+        cluster = Cluster.query.filter_by(id=id).first()
+        cluster.assigned = assigned
         db.session.commit()
     except Exception as e:
-        print("Couldn't update cluster title")
+        print("Couldn't update cluster assigned")
         print(e)
     return redirect("/")
 
@@ -198,7 +198,7 @@ def delete_user():
         db.session.commit()
         print("Delete?")
     except Exception as e:
-        print("Couldn't update cluster title")
+        print("Couldn't update user deletion")
         print(e)
     return redirect("/admin")
 
@@ -211,7 +211,7 @@ def delete_cluster():
         db.session.commit()
         print("Delete?")
     except Exception as e:
-        print("Couldn't update cluster title")
+        print("Couldn't update cluster deletion")
         print(e)
     return redirect("/admin")
 
