@@ -81,21 +81,21 @@ def admin():
 def assign_user():
     try:
         email = request.form.get("email")
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first_or_404(description='User {} not found, please contact Assistants via Slack'.format(email))
         if user:
             print("User found: " + email)
             cluster = Cluster.query.filter_by(assigned=email).first()
             if not cluster:
-                cluster = Cluster.query.filter_by(geo=user.geo, assigned=None).first()
+                cluster = Cluster.query.filter_by(geo=user.geo, assigned=None).first_or_404(description='No available cluster for region {}, please contact Assistants via Slack'.format(email))
                 cluster.assigned = email
                 print("Assigning Cluster" + cluster.id + " to user: " + email)
                 db.session.commit()
             return render_template("registration.html", cluster=cluster)
         else:
-            render_template("404.html")
+            render_template("user.html")
 
     except Exception as e:
-        print("Couldn't update cluster title")
+        print("Couldn't update cluster assignment")
         print(e)
     return redirect("/")
 
