@@ -5,21 +5,25 @@
 
 {% block body %}
 <div class="container">
+  <br>
+  <br>
     <h1>Cluster details:</h1>
+  <br>
+  <br>
 
     <table class="table">
       <thead class="thead-dark">
         <tr>
-          <th scope="col">Login URL</th>
+          <th scope="col">Cluster Login</th>
           <th scope="col">Username</th>
           <th scope="col">Password</th>
-          <th scope="col">Workshop URL</th>
+          <th scope="col">Workshop Guide</th>
         </tr>
       </thead>
       <tbody>
           <tr>
             <td>
-                <a href="{{cluster.login_url}}" target="_blank">Login URL</a>
+                <a href="{{cluster.login_url}}" target="_blank">Link</a>
             </td>
             <td>
                 {{cluster.username}}
@@ -28,7 +32,7 @@
                 {{cluster.password}}
             </td>
             <td>
-                <a href="{{cluster.workshop_url}}" target="_blank">Workshop URL</a>
+                <a href="{{cluster.workshop_url}}" target="_blank">Link</a>
             </td>
           </tr>
         </tbody>

@@ -14,10 +14,15 @@ from flask import redirect
 
 from flask_sqlalchemy import SQLAlchemy
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
 DB_USER = os.getenv('DB_USER', 'root')
 DB_PASS = os.getenv('DB_PASS', 'my-secret-pw')
 DB_HOST = os.getenv('DB_HOST', 'localhost')  
 DB_NAME = os.getenv('DB_NAME', 'cluster_booking2')
+ADMIN_USER = os.getenv('ADMIN_PASS', 'devnation@redhat.com')
+ADMIN_PASS = os.getenv('ADMIN_PASS', 'devnati@n!')
 
 SQLALCHEMY_DATABASE_URI_TMPL = "mysql+pymysql://%(user)s:%(passwd)s@%(host)s/%(name)s"
 
@@ -64,12 +69,16 @@ class User(db.Model):
     def __repr__(self):
         return "<Email: {}>".format(self.email)
 
+class Admin(db.Model):
+    email = db.Column(db.String(100), unique=True, nullable=False, primary_key=True)
+    password = db.Column(db.String(100))
+
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     return render_template("user.html")
 
-@app.route("/admin", methods=["GET", "POST"])
+@app.route("/_masters_page", methods=["GET", "POST"])
 def admin():
     clusters = None
     users = None
@@ -86,7 +95,7 @@ def assign_user():
             print("User found: " + email)
             cluster = Cluster.query.filter_by(assigned=email).first()
             if not cluster:
-                cluster = Cluster.query.filter_by(geo=user.geo, assigned=None).first_or_404(description='No available cluster for region {}, please contact Assistants via Slack'.format(email))
+                cluster = Cluster.query.filter_by(geo=user.geo, assigned=None).first_or_404(description='No available cluster for region {}, please contact Assistants via Slack'.format(user.geo))
                 cluster.assigned = email
                 print("Assigning Cluster" + cluster.id + " to user: " + email)
                 db.session.commit()
@@ -139,7 +148,7 @@ def upload_cluster():
                             print(e)
                 i += 1
             print(data)
-    return redirect("/admin")
+    return redirect("/_masters_page")
 
 @app.route("/user/upload", methods=["POST"])
 def upload_user():
@@ -161,7 +170,7 @@ def upload_user():
                             user = User(email=row[1],
                                         name=row[0],
                                         geo=row[3],
-                                        company=row[9])
+                                        company=row[8])
                             db.session.add(user)
                             db.session.commit()
                         except Exception as e:
@@ -169,7 +178,7 @@ def upload_user():
                             print(e)
                 i += 1
             print(data)
-    return redirect("/admin")
+    return redirect("/_masters_page")
 
 @app.route("/cluster/update", methods=["POST"])
 def update():
@@ -182,7 +191,7 @@ def update():
     except Exception as e:
         print("Couldn't update cluster assigned")
         print(e)
-    return redirect("/admin")
+    return redirect("/_masters_page")
 
 
 @app.route("/user/delete", methods=["POST"])
@@ -196,7 +205,7 @@ def delete_user():
     except Exception as e:
         print("Couldn't update user deletion")
         print(e)
-    return redirect("/admin")
+    return redirect("/_masters_page")
 
 @app.route("/cluster/delete", methods=["POST"])
 def delete_cluster():
@@ -209,7 +218,7 @@ def delete_cluster():
     except Exception as e:
         print("Couldn't update cluster deletion")
         print(e)
-    return redirect("/admin")
+    return redirect("/_masters_page")
 
 
 
