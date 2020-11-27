@@ -27,8 +27,16 @@ pip3 install -r requirements.txt
 
 ### Run locally
 
-Start the app:
+#### Run Migrations
 
+```
+python manage.py db init
+DB_USER=user DB_PASS=pass DB_HOST=127.0.0.1 DB_NAME=cluster_booking python manage.py db migrate
+DB_USER=user DB_PASS=pass DB_HOST=127.0.0.1 DB_NAME=cluster_booking python manage.py db upgrade
+```
+
+#### Run the app
+ 
 ```
 DB_USER=user DB_PASS=pass DB_HOST=127.0.0.1 DB_NAME=cluster_booking python app.py
 ```
@@ -36,6 +44,12 @@ DB_USER=user DB_PASS=pass DB_HOST=127.0.0.1 DB_NAME=cluster_booking python app.p
 Open at your Web browser the following link http://127.0.0.1:8080
 
 ## OpenShift
+
+### Create a new project
+
+```
+oc new-project devnation-labs
+```
 
 ### Get MariaDB
 
@@ -45,11 +59,13 @@ oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mar
 
 ### Run on OCP (upload from local directory)
 
+Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
+
 ```
-oc new-build --name devnation-labs -i python .
+oc new-build --name devnation-labs -i python --binary=true
 oc start-build devnation-labs --from-dir=.
-oc new-app devnation-labs -e DB_USER=mariadb DB_PASS=mariadb DB_HOST=mariadb DB_NAME=cluster_booking
-oc expose svc/devnation-labs
+oc new-app devnation-labs -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking
+oc create route edge --service=devnation-labs
 ```
 
 

@@ -1,7 +1,6 @@
 import os
 import csv
 import codecs
-import datetime
 from re import search
 from os import environ, path
 
@@ -13,30 +12,18 @@ from flask import redirect
 
 
 from flask_sqlalchemy import SQLAlchemy
+#from flask_migrate import Migrate
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-DB_USER = os.getenv('DB_USER', 'root')
-DB_PASS = os.getenv('DB_PASS', 'my-secret-pw')
-DB_HOST = os.getenv('DB_HOST', 'localhost')  
-DB_NAME = os.getenv('DB_NAME', 'cluster_booking2')
-ADMIN_USER = os.getenv('ADMIN_PASS', 'devnation@redhat.com')
-ADMIN_PASS = os.getenv('ADMIN_PASS', 'devnati@n!')
 
-SQLALCHEMY_DATABASE_URI_TMPL = "mysql+pymysql://%(user)s:%(passwd)s@%(host)s/%(name)s"
 
-SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI_TMPL % {
-    'user': DB_USER,
-    'passwd': DB_PASS,
-    'host': DB_HOST,
-    'name': DB_NAME
-}
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config.from_pyfile('config.py', silent=True)
+
 
 geo_dict = {}
 geo_dict["AMER"] = ["wdc"]
@@ -44,34 +31,10 @@ geo_dict["EMEA"] = ["fr0","ams0"]
 geo_dict["APAC"] = ["che01"]
 
 db = SQLAlchemy(app)
-
-class Cluster(db.Model):
-    id = db.Column(db.String(100), unique=True, nullable=False, primary_key=True)
-    event_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    name = db.Column(db.String(50), unique=True, nullable=False)
-    geo = db.Column(db.String(4), nullable=False)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(50), unique=True, nullable=False)
-    login_url = db.Column(db.String(2500), nullable=False)
-    workshop_url = db.Column(db.String(2500), nullable=False)
-    assigned = db.Column(db.String(100), unique=True)
-
-    def __repr__(self):
-        return "<ID: {}>".format(self.id)
+#migrate = Migrate(app, db)
 
 
-class User(db.Model):
-    email = db.Column(db.String(100), unique=True, nullable=False, primary_key=True)
-    event_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    name = db.Column(db.String(100), nullable=False)
-    geo = db.Column(db.String(4), nullable=False)
-    company = db.Column(db.String(100), nullable=True)
-    def __repr__(self):
-        return "<Email: {}>".format(self.email)
-
-class Admin(db.Model):
-    email = db.Column(db.String(100), unique=True, nullable=False, primary_key=True)
-    password = db.Column(db.String(100))
+from models import *
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -170,7 +133,10 @@ def upload_user():
                             user = User(email=row[1],
                                         name=row[0],
                                         geo=row[3],
-                                        company=row[8])
+                                        location=row[2],
+                                        company=row[8],
+                                        country=row[9],
+                                        job_role=row[10])
                             db.session.add(user)
                             db.session.commit()
                         except Exception as e:
@@ -224,5 +190,5 @@ def delete_cluster():
 
 
 if __name__ == "__main__":
-    db.create_all()
+    #db.create_all()
     app.run(host='0.0.0.0', port=8080, debug=True)
