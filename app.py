@@ -1,6 +1,9 @@
 import os
 import csv
 import codecs
+import csv
+import io
+
 from re import search
 from os import environ, path
 
@@ -11,9 +14,11 @@ from flask import request
 from flask import redirect
 from flask import flash
 from flask import url_for
+from flask import make_response
 
 
 from flask_sqlalchemy import SQLAlchemy
+
 #from flask_migrate import Migrate
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -250,6 +255,32 @@ def delete_cluster():
         print(e)
     return redirect("/admin/panel")
 
+@app.route("/admin/data/export", methods=["GET"])
+@login_required
+def export_csv():
+    csvList = [("name","email","location","GEO",
+               "Company Name","Country","What is your job role/title?",
+               "Cluster ID", "Cluster Name","Username","User Password",
+               "Login URL", "Workshop URL")]
+    try:
+        results = db.session.execute("""
+            SELECT u.name, u.email, u.location, u.geo, u.company, u.country,
+                u.job_role, c.id, c.name, c.username, c.password, c.login_url, c.workshop_url 
+            FROM cluster c 
+            RIGHT OUTER JOIN user u ON c.assigned=u.email
+            ORDER BY u.name""")
+        for row in results:
+            csvList.append(row)
+        si = io.StringIO()
+        cw = csv.writer(si)
+        cw.writerows(csvList)
+        output = make_response(si.getvalue())
+        output.headers["Content-Disposition"] = "attachment; filename=export.csv"
+        output.headers["Content-type"] = "text/csv"
+        return output
+    except Exception as e:
+        print("Couldn't export CSV data")
+        print(e) 
 
 
 
