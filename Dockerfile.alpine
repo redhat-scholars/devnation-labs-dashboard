@@ -9,6 +9,7 @@ ENV DB_USER "mariadb"
 ENV DB_PASS "mariadb"
 ENV DB_HOST "127.0.0.1"
 ENV DB_NAME "cluster_booking"
+ENV INIT_DB "no"
 
 RUN apk update && apk add mariadb-dev gcc python3-dev musl-dev
 
