@@ -1,0 +1,25 @@
+FROM python:3.8.0-alpine
+
+WORKDIR /opt/app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+ENV DB_USER "mariadb"
+ENV DB_PASS "mariadb"
+ENV DB_HOST "127.0.0.1"
+ENV DB_NAME "cluster_booking"
+
+RUN apk update && apk add mariadb-dev gcc python3-dev musl-dev
+
+RUN pip install --upgrade pip
+COPY ./requirements.txt /opt/app/requirements.txt
+RUN export LDFLAGS="-L/usr/local/opt/openssl/lib"
+RUN pip install -r requirements.txt
+
+COPY . /opt/app/
+
+EXPOSE 8080
+
+
+ENTRYPOINT ["./docker-entrypoint.sh"]

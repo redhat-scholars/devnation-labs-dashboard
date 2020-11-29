@@ -12,7 +12,12 @@ It uses MariaDB as DB.
 Get MariaDB from Dockerhub:
 
 ```
-podman run --rm -d --name mariadb -v /some/local/dir:/var/lib/mysql:z -p 3306:3306 -e MYSQL_ROOT_PASSWORD=foo -ti mariadb
+docker pull mariadb
+```
+
+Run MariaDB:
+```
+docker run --rm -d --name mariadb -v /some/local/dir:/var/lib/mysql:z -p 3306:3306 -e MYSQL_ROOT_PASSWORD=foo -ti mariadb
 ```
 
 ### Setup Python
@@ -42,6 +47,24 @@ DB_USER=user DB_PASS=pass DB_HOST=127.0.0.1 DB_NAME=cluster_booking python app.p
 ```
 
 Open at your Web browser the following link http://127.0.0.1:8080
+
+
+### Docker/Podman
+
+The `docker-entrypoint.sh` is not initializating the db, it runs only the upgrades, thus it need to be done by another container or locally
+
+#### Build
+
+```
+docker build -f Dockerfile.alpine -t devnationa-labs:latest
+```
+
+
+#### Run
+
+```
+docker run -e DB_USER="mariadb" -e DB_PASS="mariadb" -e DB_HOST="<SERVICE_OR_LAN_IP>" -p 8080:8080 -ti devnationa-labs
+```
 
 ## OpenShift
 
