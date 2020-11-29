@@ -68,6 +68,10 @@ oc new-app devnation-labs -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=maria
 oc create route edge --service=devnation-labs
 ```
 
+## Usage
+
+- `/`: Student cluster booking form
+- `/admin/panel`: Administrator panel (Upload clusters and users via CSV, assigning manually clusters)
 
 # Reference
 
