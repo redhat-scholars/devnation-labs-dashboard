@@ -1,4 +1,6 @@
 import datetime
+from flask_login import UserMixin
+
 from app import db
 
 
@@ -31,8 +33,9 @@ class User(db.Model):
     def __repr__(self):
         return "<Email: {}>".format(self.email)
 
-class Admin(db.Model):
-    email = db.Column(db.String(100), unique=True, nullable=False, primary_key=True)
+class Admin(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100))
 
     def __repr__(self):

@@ -11,8 +11,15 @@
   <br>
       <form method="POST" action="/user/assign">
         <div class="form-group">
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ messages[0] }}. Contact us on <a href="https://rhdevnation.slack.com/archives/C01DUG759U0">Slack</a> for support.
+              </div>
+            {% endif %}
+          {% endwith %}
           <label for="email">Email address</label>
-          <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+          <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter your email address used in event registration">
           <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>

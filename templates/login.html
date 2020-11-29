@@ -1,0 +1,35 @@
+{% extends "base-user.html" %}
+
+{% block title %} Dashboard Login {% endblock %}
+
+{% block body %}
+
+
+<div class="container" style="max-width: 450px;">
+  <h1> Login </h1>
+  <br>
+  <form method="POST" action="/admin/login">
+  <div class="form-group">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-danger" role="alert">
+         {{ messages[0] }}.
+        </div>
+         {% endif %}
+    {% endwith %}
+    <label for="email">Email address</label>
+    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" id="password" name="password">
+  </div>
+  <div class="form-group form-check">
+    <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+    <label class="form-check-label" for="rememberMe">Remember me</label>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+ 
+</div>
+{% endblock %}

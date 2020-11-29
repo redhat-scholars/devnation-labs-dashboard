@@ -9,12 +9,16 @@ from flask import Flask
 from flask import render_template
 from flask import request
 from flask import redirect
+from flask import flash
 
 
 from flask_sqlalchemy import SQLAlchemy
 #from flask_migrate import Migrate
 
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from flask_login import login_user, logout_user, login_required, LoginManager
+
 
 
 
@@ -32,16 +36,62 @@ geo_dict["APAC"] = ["che01"]
 
 db = SQLAlchemy(app)
 #migrate = Migrate(app, db)
+login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.init_app(app)
+
 
 
 from models import *
+
 
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     return render_template("user.html")
 
-@app.route("/_masters_page", methods=["GET", "POST"])
+@login_manager.user_loader
+def load_user(user_id):
+    # since the user_id is just the primary key of our user table, use it in the query for the user
+    return Admin.query.get(int(user_id))
+
+@app.route('/admin/login', methods=["GET"])
+def login():
+    return render_template('login.html')
+
+@app.route('/admin/login', methods=['POST'])
+def login_post():
+    try:
+        email = request.form.get("email")
+        password = request.form.get('password')
+        remember = True if request.form.get('remember') else False
+        
+        admin = Admin.query.filter_by(email=email).first()
+
+        print(admin)
+
+        # check if the user actually exists
+        # take the user-supplied password, hash it, and compare it to the hashed password in the database
+        if not admin or not check_password_hash(admin.password, password):
+            flash('Please check your login details and try again')
+            return redirect("/admin/login") # if the user doesn't exist or password is wrong, reload the page
+
+        # if the above check passes, then we know the user has the right credentials
+        login_user(admin, remember=remember)
+        return redirect("/admin/panel")
+    except Exception as e:
+        print("Couldn't login admin")
+        print(e)
+    return redirect("/admin/login")
+
+@app.route("/admin/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect("/admin/login")
+
+@app.route("/admin/panel", methods=["GET"])
+@login_required
 def admin():
     clusters = None
     users = None
@@ -53,18 +103,23 @@ def admin():
 def assign_user():
     try:
         email = request.form.get("email")
-        user = User.query.filter_by(email=email).first_or_404(description='User {} not found, please contact Assistants via Slack'.format(email))
+        user = User.query.filter_by(email=email).first()
         if user:
             print("User found: " + email)
             cluster = Cluster.query.filter_by(assigned=email).first()
             if not cluster:
-                cluster = Cluster.query.filter_by(geo=user.geo, assigned=None).first_or_404(description='No available cluster for region {}, please contact Assistants via Slack'.format(user.geo))
-                cluster.assigned = email
-                print("Assigning Cluster" + cluster.id + " to user: " + email)
-                db.session.commit()
+                cluster = Cluster.query.filter_by(geo=user.geo, assigned=None).first()
+                if cluster:
+                    cluster.assigned = email
+                    print("Assigning Cluster" + cluster.id + " to user: " + email)
+                    db.session.commit()
+                else:
+                    flash('No available clusters for user {} in region {}'.format(email, user.geo))
+                    return render_template("user.html")
             return render_template("registration.html", cluster=cluster)
         else:
-            render_template("user.html")
+            flash('User {} not found'.format(email))
+            return render_template("user.html")
 
     except Exception as e:
         print("Couldn't update cluster assignment")
@@ -111,7 +166,7 @@ def upload_cluster():
                             print(e)
                 i += 1
             print(data)
-    return redirect("/_masters_page")
+    return redirect("/admin/panel")
 
 @app.route("/user/upload", methods=["POST"])
 def upload_user():
@@ -144,7 +199,7 @@ def upload_user():
                             print(e)
                 i += 1
             print(data)
-    return redirect("/_masters_page")
+    return redirect("/admin/panel")
 
 @app.route("/cluster/update", methods=["POST"])
 def update():
@@ -157,7 +212,7 @@ def update():
     except Exception as e:
         print("Couldn't update cluster assigned")
         print(e)
-    return redirect("/_masters_page")
+    return redirect("/admin/panel")
 
 
 @app.route("/user/delete", methods=["POST"])
@@ -171,7 +226,7 @@ def delete_user():
     except Exception as e:
         print("Couldn't update user deletion")
         print(e)
-    return redirect("/_masters_page")
+    return redirect("/admin/panel")
 
 @app.route("/cluster/delete", methods=["POST"])
 def delete_cluster():
@@ -184,11 +239,16 @@ def delete_cluster():
     except Exception as e:
         print("Couldn't update cluster deletion")
         print(e)
-    return redirect("/_masters_page")
+    return redirect("/admin/panel")
 
 
 
 
 if __name__ == "__main__":
     #db.create_all()
+    admin = Admin.query.filter_by(email=app.config['ADMIN_USER']).first()
+    if not admin:
+        admin = Admin(email=app.config['ADMIN_USER'], password=generate_password_hash(app.config['ADMIN_PASS'], method='sha256'))
+        db.session.add(admin)
+        db.session.commit()
     app.run(host='0.0.0.0', port=8080, debug=True)
