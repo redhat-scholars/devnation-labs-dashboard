@@ -10,6 +10,7 @@ from flask import render_template
 from flask import request
 from flask import redirect
 from flask import flash
+from flask import url_for
 
 
 from flask_sqlalchemy import SQLAlchemy
@@ -95,8 +96,11 @@ def logout():
 def admin():
     clusters = None
     users = None
+    db.session.commit()
     clusters = Cluster.query.all()
     users = User.query.all()
+    print("Refresh Clusters? ", len(clusters))
+    print("Refresh Users? ", len(users))
     return render_template("admin.html", clusters=clusters, users=users)
 
 @app.route("/user/assign", methods=["POST"])
@@ -127,6 +131,7 @@ def assign_user():
     return redirect("/")
 
 @app.route("/cluster/upload", methods=["POST"])
+@login_required
 def upload_cluster():
     if request.method == 'POST':
             
@@ -169,6 +174,7 @@ def upload_cluster():
     return redirect("/admin/panel")
 
 @app.route("/user/upload", methods=["POST"])
+@login_required
 def upload_user():
     if request.method == 'POST':
 
@@ -202,6 +208,7 @@ def upload_user():
     return redirect("/admin/panel")
 
 @app.route("/cluster/update", methods=["POST"])
+@login_required
 def update():
     try:
         assigned = request.form.get("assigned")
@@ -216,26 +223,28 @@ def update():
 
 
 @app.route("/user/delete", methods=["POST"])
+@login_required
 def delete_user():
     try:
         email = request.form.get("email")
         user = User.query.filter_by(email=email).first()
         db.session.delete(user)
         db.session.commit()
-        print("Delete?")
+        print("Delete? ", email)
     except Exception as e:
         print("Couldn't update user deletion")
         print(e)
-    return redirect("/admin/panel")
+    return redirect(url_for('admin'))
 
 @app.route("/cluster/delete", methods=["POST"])
+@login_required
 def delete_cluster():
     try:
         id = request.form.get("id")
         cluster = Cluster.query.filter_by(id=id).first()
         db.session.delete(cluster)
         db.session.commit()
-        print("Delete?")
+        print("Delete? ", id)
     except Exception as e:
         print("Couldn't update cluster deletion")
         print(e)
