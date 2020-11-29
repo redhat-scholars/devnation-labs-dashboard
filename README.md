@@ -57,15 +57,26 @@ oc new-project devnation-labs
 oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mariadb -p MYSQL_PASSWORD=mariadb -p MYSQL_ROOT_PASSWORD=mariadb -p MYSQL_DATABASE=cluster_booking
 ```
 
-### Run on OCP (upload from local directory)
+### Run on OCP
 
 Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
+
+#### Upload from local working dir
 
 ```
 oc new-build --name devnation-labs -i python --binary=true
 oc start-build devnation-labs --from-dir=.
 oc new-app devnation-labs -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking
 oc create route edge --service=devnation-labs
+```
+
+#### oc new-app with private repo on GitHub
+
+```
+oc create secret generic github --type=kubernetes.io/basic-auth --from-literal=username=<YOUR-GITHUB-USER> --from-literal=password=<YOUR_ACCESS_TOKEN>
+oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking --source-secret=github
+oc create route edge --service=devnation-labs-dashboard
+
 ```
 
 ## Usage
