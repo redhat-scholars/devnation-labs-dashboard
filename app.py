@@ -32,7 +32,7 @@ app.config.from_pyfile('config.py', silent=True)
 
 geo_dict = {}
 geo_dict["AMER"] = ["wdc"]
-geo_dict["EMEA"] = ["fr0","ams0"]
+geo_dict["EMEA"] = ["fra0","ams0"]
 geo_dict["APAC"] = ["che01"]
 
 db = SQLAlchemy(app)
