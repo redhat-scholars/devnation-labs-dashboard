@@ -57,7 +57,7 @@ oc new-project devnation-labs
 oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mariadb -p MYSQL_PASSWORD=mariadb -p MYSQL_ROOT_PASSWORD=mariadb -p MYSQL_DATABASE=cluster_booking
 ```
 
-### Run on OCP
+### Deploy
 
 Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
 
@@ -77,6 +77,19 @@ oc create secret generic github --type=kubernetes.io/basic-auth --from-literal=u
 oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking --source-secret=github
 oc create route edge --service=devnation-labs-dashboard
 
+```
+
+
+#### odo (Experimental)
+
+odo should been able to [link services](https://docs.openshift.com/container-platform/latest/cli_reference/developer_cli_odo/creating-instances-of-services-managed-by-operators.html#listing-available-services-from-the-operators-installed-on-the-cluster_creating-instances-of-services-managed-by-operators) like MariaDB, however there's no MariaDB yet inside OCP OperatorHub.
+
+```
+odo project create devnation-labs
+odo create python --s2i
+odo push
+odo url create --port 8080 --secure
+odo push
 ```
 
 ## Usage

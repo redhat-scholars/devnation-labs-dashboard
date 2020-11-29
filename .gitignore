@@ -110,3 +110,5 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+.odo/odo-file-index.json
