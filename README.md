@@ -4,6 +4,8 @@ Python tiny CRUD application with Flask, SQLAlchemy and Bootstrap
 
 It uses MariaDB as DB.
 
+![App topology](app.png)
+
 ## Local Development
 
 
