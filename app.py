@@ -154,14 +154,14 @@ def upload_cluster():
                         try:
                             geo = None
                             for key in geo_dict:
-                                print(key)
+                                #print(key)
                                 for item in geo_dict[key]:
-                                    print("Item:" + item)
-                                    print("Name: " + row[1])
+                                    #print("Item:" + item)
+                                    #print("Name: " + row[1])
                                     if search(item, row[1]):
                                         geo = key
 
-                            print("Geo " + geo)
+                            print("Geo found:" + geo)
                             cluster = Cluster(id=row[0],
                                                 name=row[1],
                                                 username=row[2],
@@ -175,7 +175,7 @@ def upload_cluster():
                             print("Failed to add Cluster")
                             print(e)
                 i += 1
-            print(data)
+            print("Row: ", i)
     return redirect("/admin/panel")
 
 @app.route("/user/upload", methods=["POST"])
