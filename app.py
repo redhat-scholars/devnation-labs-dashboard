@@ -194,7 +194,7 @@ def upload_user():
             i = 0
             for row in csv.reader(stream, dialect=csv.excel):
                 if i > 0 and row:
-                    if row[0] != '' and row[1] != '' and row[3] != '':
+                    if row[1] != '' and row[3] != '':
                         try:
                             user = User(email=row[1],
                                         name=row[0],
