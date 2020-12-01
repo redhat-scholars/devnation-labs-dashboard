@@ -283,9 +283,9 @@ def delete_cluster():
         cluster = Cluster.query.filter_by(id=id).first()
         db.session.delete(cluster)
         db.session.commit()
-        print("Delete? ", id)
+        print("Deleted cluster: {} ", id)
     except Exception as e:
-        print("Couldn't update cluster deletion")
+        print("Couldn't delete cluster: {}", id)
         print(e)
         db.session.rollback()
     return redirect("/admin/panel")
