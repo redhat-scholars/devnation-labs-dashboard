@@ -274,7 +274,7 @@ def export_csv():
                 u.job_role, c.id, c.name, c.username, c.password, c.login_url, c.workshop_url 
             FROM cluster c 
             RIGHT OUTER JOIN user u ON c.assigned=u.email
-            ORDER BY u.name""")
+            ORDER BY c.name DESC""")
         for row in results:
             csvList.append(row)
         si = io.StringIO()
