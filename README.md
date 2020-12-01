@@ -53,19 +53,21 @@ Open at your Web browser the following link http://127.0.0.1:8080
 
 ### Docker/Podman
 
-The `docker-entrypoint.sh` is not initializating the db, it runs only the upgrades, thus it need to be done by another container or locally
+The `docker-entrypoint.sh` is not initializating the db by default, you can do it with adding this ENV the first time:
+
+```INIT_DB=yes```
 
 #### Build
 
 ```
-docker build -f Dockerfile.alpine -t devnationa-labs:latest
+docker build -f Dockerfile.alpine -t devnation-labs:latest
 ```
 
 
 #### Run
 
 ```
-docker run -e DB_USER="mariadb" -e DB_PASS="mariadb" -e DB_HOST="<SERVICE_OR_LAN_IP>" -p 8080:8080 -ti devnationa-labs
+docker run -e DB_USER="mariadb" -e DB_PASS="mariadb" -e DB_HOST="<SERVICE_OR_LAN_IP>" -p 8080:8080 -ti devnation-labs
 ```
 
 ## OpenShift
@@ -104,7 +106,6 @@ oc create route edge --service=devnation-labs-dashboard
 
 ```
 
-
 #### odo (Experimental)
 
 odo should been able to [link services](https://docs.openshift.com/container-platform/latest/cli_reference/developer_cli_odo/creating-instances-of-services-managed-by-operators.html#listing-available-services-from-the-operators-installed-on-the-cluster_creating-instances-of-services-managed-by-operators) like MariaDB, however there's no MariaDB yet inside OCP OperatorHub.
@@ -117,14 +118,30 @@ odo url create --port 8080 --secure
 odo push
 ```
 
-## Usage
+### Admin user
 
+By default there's only one Admin user, default credentials are stored in `config.py`
+
+If you want to change those, a new Admin will be created using these ENV:
+
+- `ADMIN_USER`: some email used as username
+- `ADMIN_PASS`: some pass
+
+## Paths
+
+Web:
 - `/`: Student cluster booking form
 - `/admin/panel`: Administrator panel (Upload clusters and users via CSV, assigning manually clusters)
 
+REST:
+
+
+
 # Reference
 
-- https://github.com/macagua/example.flask.crud-app.git
+- https://flask.palletsprojects.com/en/1.1.x/
 - https://docs.sqlalchemy.org/en/latest/orm/tutorial.html
+- https://github.com/macagua/example.flask.crud-app.git
+
 
 
