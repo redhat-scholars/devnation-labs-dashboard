@@ -1,6 +1,6 @@
 # DevNation Labs (HOWL) Dashboard
 
-Python tiny CRUD application with Flask, SQLAlchemy and Bootstrap
+Python tiny CRUD application with Flask, SQLAlchemy and Bootstrap to assign clusters for [HOWL](https://developers.redhat.com/devnation/labs/openshift-howl) Labs.
 
 It uses MariaDB as DB.
 
@@ -132,9 +132,36 @@ If you want to change those, a new Admin will be created using these ENV:
 Web:
 - `/`: Student cluster booking form
 - `/admin/panel`: Administrator panel (Upload clusters and users via CSV, assigning manually clusters)
-
+- `/admin/login`: Administrator login
 REST:
 
+## Usage
+
+- **Students view** : http://127.0.0.1:8080/ or URL from OpenShift Route + path
+- **Admin panel**: http://127.0.0.1:8080/admin/panel or URL from OpenShift Route + path
+
+### Upload Cluster CSV
+
+Expected min format (can contain more columns, but those are mandatory)
+```
+Cluster ID,Cluster Name,Username,User Password,Login URL,Workshop URL
+```
+
+### Upload Registration CSV
+
+Expected min format (can contain more columns, but those are mandatory)
+
+```
+name,email,location,GEO,Company Name,Country,What is your job role/title?
+```
+
+### Add User manually
+
+Use the form
+
+### Export CSV
+
+It will generated a CSV containing all the info like in Registration CSV + cluster assigned info, ordered by cluster name atm.
 
 
 # Reference
