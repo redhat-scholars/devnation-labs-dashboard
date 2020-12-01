@@ -86,7 +86,7 @@ def login_post():
         login_user(admin, remember=remember)
         return redirect("/admin/panel")
     except Exception as e:
-        print("Couldn't login admin")
+        print("Couldn't login admin: {}", email)
         print(e)
     return redirect("/admin/login")
 
@@ -104,8 +104,8 @@ def admin():
     db.session.commit()
     clusters = Cluster.query.all()
     users = User.query.all()
-    print("Refresh Clusters? ", len(clusters))
-    print("Refresh Users? ", len(users))
+    print("Refresh Clusters count: ", len(clusters))
+    print("Refresh Users count: ", len(users))
     return render_template("admin.html", clusters=clusters, users=users)
 
 @app.route("/user/assign", methods=["POST"])
@@ -131,7 +131,7 @@ def assign_user():
             return render_template("user.html")
 
     except Exception as e:
-        print("Couldn't update cluster assignment")
+        print("Couldn't assign a cluster to: {}", email)
         print(e)
         db.session.rollback()
     return redirect("/")
@@ -144,7 +144,7 @@ def upload_cluster():
             flask_file = request.files['fileupload']  
 
             if not flask_file:
-                return 'Upload a CSV file'
+                return 'Please upload a CSV file'
             
             data = []
             stream = codecs.iterdecode(flask_file.stream, 'utf-8')
@@ -173,7 +173,7 @@ def upload_cluster():
                             db.session.add(cluster)
                             db.session.commit()
                         except Exception as e:
-                            print("Failed to add Cluster")
+                            print("Failed to add Cluster: {}", row[0])
                             print(e)
                             db.session.rollback()
                 i += 1
@@ -208,7 +208,7 @@ def upload_user():
                             db.session.add(user)
                             db.session.commit()
                         except Exception as e:
-                            print("Failed to add User")
+                            print("Failed to add User: {}", row[1])
                             print(e)
                             db.session.rollback()
                 i += 1
@@ -225,7 +225,7 @@ def update():
         cluster.assigned = assigned
         db.session.commit()
     except Exception as e:
-        print("Couldn't update cluster assigned")
+        print("Couldn't assign cluster {} to {}", id, assigned)
         print(e)
         db.session.rollback()
     return redirect("/admin/panel")
@@ -239,9 +239,38 @@ def delete_user():
         user = User.query.filter_by(email=email).first()
         db.session.delete(user)
         db.session.commit()
-        print("Delete? ", email)
+        print("Deleted user: ", email)
     except Exception as e:
-        print("Couldn't update user deletion")
+        print("Couldn't delete user: {}", email)
+        print(e)
+        db.session.rollback()
+    return redirect(url_for('admin'))
+
+
+@app.route("/user/add", methods=["POST"])
+@login_required
+def add_user():
+    try:
+        email = request.form.get("c_email")
+        name = request.form.get("c_fullname")
+        company = request.form.get("c_company")
+        geo = request.form.get("c_geo")
+        country = request.form.get("c_country")
+        city = request.form.get("c_city")
+        job_role = request.form.get("c_job_role")
+
+        user = User(email=email,
+                    name=name,
+                    company=company,
+                    geo=geo,
+                    country=country,
+                    location=city,
+                    job_role=job_role)
+        db.session.add(user)
+        db.session.commit()
+        print("Added new user: {}", user)
+    except Exception as e:
+        print("Couldn't add user {}:", email)
         print(e)
         db.session.rollback()
     return redirect(url_for('admin'))

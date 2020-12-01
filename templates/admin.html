@@ -6,9 +6,10 @@
 
 {% block body %}
 
-
+<br>
 <div class="container">
-    <h1>Add Cluster CSV</h1>
+  <br>
+    <h2>Add Clusters with Cluster CSV</h2>
     <form action="/cluster/upload" method="post" enctype="multipart/form-data">
       <div class="form-group">
         <label for="fileToUpload">Upload generated CSV for clusters</label>
@@ -16,10 +17,10 @@
       </div>
       <button type="submit" class="btn btn-primary mb-2">Upload</button>
     </form>
+    <br>
 
 
-
-    <h1>Clusters: {{ clusters|length }}</h1>
+    <h2>Clusters: {{ clusters|length }}</h2>
     <table class="table">
       <thead class="thead-dark">
         <tr>
@@ -60,16 +61,98 @@
     </tbody>
     </table>
   <br>
-    <h1>Add Registration CSV</h1>
+  <br>
+    <h2>Add Users with Registration CSV</h2>
 
-    <form action="/user/upload" method="post" enctype="multipart/form-data">
+    <form action="/user/upload" method="POST" enctype="multipart/form-data">
       <div class="form-group">
         <label for="fileToUpload">Upload event registered user from exported CSV</label>
         <input type="file" class="form-control-file" id="fileToUpload" name="fileupload">
       </div>
       <button type="submit" class="btn btn-primary mb-2">Upload</button>
     </form>
-    <h1>Users: {{ users|length }}</h1>
+    <br>
+    <h2>Add User manually</h2>
+    <br>
+    <form action="/user/add" method="POST" class="needs-validation" novalidate>
+      <div class="form-row">
+        <div class="col-md-6 mb-3">
+          <label for="c_fullname">Full Name</label>
+          <input type="text" class="form-control" id="c_fullname" name="c_fullname" value="" required>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="c_email">Email address</label>
+          <input type="email" class="form-control" id="c_email" name="c_email" aria-describedby="emailHelp" required>
+          <small id="emailHelp" class="form-text text-muted">This is unique for the event</small>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="c_company">Company</label>
+          <input type="text" class="form-control" id="c_company" name="c_company" required>
+          <div class="invalid-feedback">
+            Please provide a valid name.
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="c_geo">GEO</label>
+          <select class="custom-select" id="c_geo" name="c_geo" required>
+            <option selected disabled value="">Select...</option>
+            <option>AMER</option>
+            <option>APAC</option>
+            <option>EMEA</option>
+          </select>
+          <div class="invalid-feedback">
+            Please select a valid GEO.
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="c_country">Country</label>
+          <input type="text" class="form-control" id="c_country" name="c_country" required>
+          <div class="invalid-feedback">
+            Please provide a valid country name.
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-6 mb-3">
+          <label for="c_city">City</label>
+          <input type="text" class="form-control" id="c_city" name="c_city" placeholder="Optional">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="c_jobrole">Job role</label>
+          <input type="text" class="form-control" id="c_jobrole" name="c_jobrole" placeholder="Optional">
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit">Submit form</button>
+    </form>
+    
+    <script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
+    </script>
+    <br>
+    <h2>Users: {{ users|length }}</h2>
     <table class="table">
       <thead class="thead-dark">
         <tr>
