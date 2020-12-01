@@ -133,6 +133,7 @@ def assign_user():
     except Exception as e:
         print("Couldn't update cluster assignment")
         print(e)
+        db.session.rollback()
     return redirect("/")
 
 @app.route("/cluster/upload", methods=["POST"])
@@ -174,6 +175,7 @@ def upload_cluster():
                         except Exception as e:
                             print("Failed to add Cluster")
                             print(e)
+                            db.session.rollback()
                 i += 1
             print("Row: ", i)
     return redirect("/admin/panel")
@@ -208,6 +210,7 @@ def upload_user():
                         except Exception as e:
                             print("Failed to add User")
                             print(e)
+                            db.session.rollback()
                 i += 1
             print(data)
     return redirect("/admin/panel")
@@ -224,6 +227,7 @@ def update():
     except Exception as e:
         print("Couldn't update cluster assigned")
         print(e)
+        db.session.rollback()
     return redirect("/admin/panel")
 
 
@@ -239,6 +243,7 @@ def delete_user():
     except Exception as e:
         print("Couldn't update user deletion")
         print(e)
+        db.session.rollback()
     return redirect(url_for('admin'))
 
 @app.route("/cluster/delete", methods=["POST"])
@@ -253,6 +258,7 @@ def delete_cluster():
     except Exception as e:
         print("Couldn't update cluster deletion")
         print(e)
+        db.session.rollback()
     return redirect("/admin/panel")
 
 @app.route("/admin/data/export", methods=["GET"])
@@ -280,7 +286,8 @@ def export_csv():
         return output
     except Exception as e:
         print("Couldn't export CSV data")
-        print(e) 
+        print(e)
+        db.session.rollback()
 
 
 
@@ -288,7 +295,12 @@ if __name__ == "__main__":
     #db.create_all()
     admin = Admin.query.filter_by(email=app.config['ADMIN_USER']).first()
     if not admin:
-        admin = Admin(email=app.config['ADMIN_USER'], password=generate_password_hash(app.config['ADMIN_PASS'], method='sha256'))
-        db.session.add(admin)
-        db.session.commit()
+        try:
+            admin = Admin(email=app.config['ADMIN_USER'], password=generate_password_hash(app.config['ADMIN_PASS'], method='sha256'))
+            db.session.add(admin)
+            db.session.commit()
+        except Exception as e:
+            print("Couldn't add admin {}", app.config['ADMIN_USER'])
+            print(e)
+            db.session.rollback()
     app.run(host='0.0.0.0', port=8080, debug=True)
