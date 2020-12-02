@@ -88,6 +88,7 @@ def login_post():
     except Exception as e:
         print("Couldn't login admin: {}", email)
         print(e)
+        db.session.rollback()
     return redirect("/admin/login")
 
 @app.route("/admin/logout")
