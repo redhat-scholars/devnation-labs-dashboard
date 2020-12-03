@@ -45,7 +45,7 @@ DB_USER=user DB_PASS=pass DB_HOST=127.0.0.1 DB_NAME=cluster_booking python manag
 #### Run the app
  
 ```
-DB_USER=user DB_PASS=pass DB_HOST=127.0.0.1 DB_NAME=cluster_booking python app.py
+DB_USER=user DB_PASS=pass DB_HOST=127.0.0.1 DB_NAME=cluster_booking ADMIN_USER=foo@web.tld ADMIN_PASS=foo python app.py
 ```
 
 Open at your Web browser the following link http://127.0.0.1:8080
@@ -67,7 +67,7 @@ docker build -f Dockerfile.alpine -t devnation-labs:latest
 #### Run
 
 ```
-docker run -e DB_USER="mariadb" -e DB_PASS="mariadb" -e DB_HOST="<SERVICE_OR_LAN_IP>" -p 8080:8080 -ti devnation-labs
+docker run -e DB_USER="mariadb" -e DB_PASS="mariadb" -e DB_HOST="<SERVICE_OR_LAN_IP>" -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo -p 8080:8080 -ti devnation-labs
 ```
 
 ## OpenShift
@@ -93,7 +93,7 @@ Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
 ```
 oc new-build --name devnation-labs -i python --binary=true
 oc start-build devnation-labs --from-dir=.
-oc new-app devnation-labs -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking
+oc new-app devnation-labs -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo
 oc create route edge --service=devnation-labs
 ```
 
@@ -101,7 +101,7 @@ oc create route edge --service=devnation-labs
 
 ```
 oc create secret generic github --type=kubernetes.io/basic-auth --from-literal=username=<YOUR-GITHUB-USER> --from-literal=password=<YOUR_ACCESS_TOKEN>
-oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking --source-secret=github
+oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo --source-secret=github
 oc create route edge --service=devnation-labs-dashboard
 
 ```
@@ -129,11 +129,24 @@ If you want to change those, a new Admin will be created using these ENV:
 
 ## Paths
 
-Web:
+### Web
+
 - `/`: Student cluster booking form
 - `/admin/panel`: Administrator panel (Upload clusters and users via CSV, assigning manually clusters)
 - `/admin/login`: Administrator login
-REST:
+
+### REST (@protected)
+
+| Path | HTTP Method | Description
+| ------------- | ------------- | ------------- |
+| /user/assign  | POST  | Assign a cluster
+| /user/add  | POST  | Add single user
+| /user/upload  | POST  | Add users from a CSV
+| /user/delete  | POST  | Delete single user
+| /cluster/upload  | POST  | Add clusters from a CSV
+| /cluster/update  | POST  | Update assigned cluster
+| /cluster/delete  | POST  | Delete single cluster
+| /admin/data/export  | GET  | Get list of users and assigned cluster as CSV
 
 ## Usage
 
