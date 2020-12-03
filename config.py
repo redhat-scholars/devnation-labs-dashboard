@@ -8,8 +8,8 @@ DB_USER = os.getenv('DB_USER', 'mariadb')
 DB_PASS = os.getenv('DB_PASS', 'mariadb')
 DB_HOST = os.getenv('DB_HOST', 'localhost')  
 DB_NAME = os.getenv('DB_NAME', 'cluster_booking')
-ADMIN_USER = os.getenv('ADMIN_USER', 'devnation@redhat.com')
-ADMIN_PASS = os.getenv('ADMIN_PASS', 'devnati@n!')
+ADMIN_USER = os.getenv('ADMIN_USER', 'admin@email.tld')
+ADMIN_PASS = os.getenv('ADMIN_PASS', '_some_difficult_pass@')
 
 SQLALCHEMY_DATABASE_URI_TMPL = "mysql+pymysql://%(user)s:%(passwd)s@%(host)s/%(name)s"
 
