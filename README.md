@@ -88,6 +88,15 @@ oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mar
 
 Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
 
+
+#### oc new-app
+
+```
+oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo
+oc create route edge --service=devnation-labs-dashboard
+
+```
+
 #### Upload from local working dir
 
 ```
@@ -95,15 +104,6 @@ oc new-build --name devnation-labs -i python --binary=true
 oc start-build devnation-labs --from-dir=.
 oc new-app devnation-labs -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo
 oc create route edge --service=devnation-labs
-```
-
-#### oc new-app with private repo on GitHub
-
-```
-oc create secret generic github --type=kubernetes.io/basic-auth --from-literal=username=<YOUR-GITHUB-USER> --from-literal=password=<YOUR_ACCESS_TOKEN>
-oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo --source-secret=github
-oc create route edge --service=devnation-labs-dashboard
-
 ```
 
 #### odo (Experimental)
