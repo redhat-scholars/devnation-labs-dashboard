@@ -125,7 +125,7 @@ def assign_user():
                 cluster = Cluster.query.filter_by(geo=fixed_geo, assigned=None).first()
                 if cluster:
                     cluster.assigned = email
-                    print("Assigning Cluster" + cluster.id + " to user: " + email)
+                    print("Assigning Cluster: " + cluster.id + " to user: " + email)
                     db.session.commit()
                 else:
                     flash('No available clusters for user {} in region {}'.format(email, user.geo))
