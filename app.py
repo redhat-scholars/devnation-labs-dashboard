@@ -74,14 +74,14 @@ def login_post():
         
         admin = Admin.query.filter_by(email=email).first()
 
-        print(admin)
-
         # check if the user actually exists
         # take the user-supplied password, hash it, and compare it to the hashed password in the database
         if not admin or not check_password_hash(admin.password, password):
             flash('Please check your login details and try again')
+            print('Invalid login attempt for admin: {}', email)
             return redirect("/admin/login") # if the user doesn't exist or password is wrong, reload the page
 
+        print(admin)
         # if the above check passes, then we know the user has the right credentials
         login_user(admin, remember=remember)
         return redirect("/admin/panel")
