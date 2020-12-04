@@ -3,7 +3,7 @@ import os
 DEBUG = False
 TESTING = False
 CSRF_ENABLED = True
-SECRET_KEY = '2621a03cd4e5881cac070d675dac75d2d973c46f466aa1b5'
+SECRET_KEY = os.getenv('SECRET_KEY','2621a03cd4e5881cac070d675dac75d2d973c46f466aa1b5')
 DB_USER = os.getenv('DB_USER', 'mariadb')
 DB_PASS = os.getenv('DB_PASS', 'mariadb')
 DB_HOST = os.getenv('DB_HOST', 'localhost')  
