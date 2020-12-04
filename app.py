@@ -118,7 +118,11 @@ def assign_user():
             print("User found: " + email)
             cluster = Cluster.query.filter_by(assigned=email).first()
             if not cluster:
-                cluster = Cluster.query.filter_by(geo=user.geo, assigned=None).first()
+                # EMEA clusters temporarily disabled
+                fixed_geo = "AMER"
+                if user.geo is "APAC":
+                    fixed_geo = user.geo
+                cluster = Cluster.query.filter_by(geo=fixed_geo, assigned=None).first()
                 if cluster:
                     cluster.assigned = email
                     print("Assigning Cluster" + cluster.id + " to user: " + email)
