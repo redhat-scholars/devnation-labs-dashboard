@@ -73,14 +73,6 @@ docker run -e DB_USER="mariadb" -e DB_PASS="mariadb" -e DB_HOST="<SERVICE_OR_LAN
 ## OpenShift
 
 
-### Generate Session Secret Key
-
-You should avoid using default `SECRET_KEY` from [config.py](config.py#L6), which defaults to a Dev-only one. For Prod envs, you can generate a new one with this command:
-
-```
-export SECRET_KEY=`python -c "import os; print(os.urandom(24).hex())"`
-```
-
 ### Create a new project
 
 ```
@@ -97,6 +89,13 @@ oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mar
 
 Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
 
+#### Generate Session Secret Key
+
+You should avoid using default `SECRET_KEY` from [config.py](config.py#L6), which defaults to a Dev-only one. For Prod envs, you can generate a new one with this command:
+
+```
+export SECRET_KEY=`python -c "import os; print(os.urandom(24).hex())"`
+```
 
 #### oc new-app
 
@@ -106,7 +105,7 @@ oc create route edge --service=devnation-labs-dashboard --insecure-policy=Redire
 
 ```
 
-#### Upload from local working dir
+#### Upload from local working dir (Optional)
 
 ```
 oc new-build --name devnation-labs -i python --binary=true
