@@ -93,7 +93,7 @@ Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
 
 ```
 oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo
-oc create route edge --service=devnation-labs-dashboard
+oc create route edge --service=devnation-labs-dashboard --insecure-policy=Redirect 
 
 ```
 
@@ -103,7 +103,7 @@ oc create route edge --service=devnation-labs-dashboard
 oc new-build --name devnation-labs -i python --binary=true
 oc start-build devnation-labs --from-dir=.
 oc new-app devnation-labs -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo
-oc create route edge --service=devnation-labs
+oc create route edge --service=devnation-labs --insecure-policy=Redirect 
 ```
 
 #### odo (Experimental)
@@ -147,6 +147,7 @@ If you want to change those, a new Admin will be created using these ENV:
 | /cluster/update  | POST  | Update assigned cluster
 | /cluster/delete  | POST  | Delete single cluster
 | /admin/data/export  | GET  | Get list of users and assigned cluster as CSV
+| /admin/login  | POST  | Login for admin user
 
 ## Usage
 
