@@ -128,9 +128,9 @@ odo push
 
 ### Admin user
 
-By default there's only one Admin user, default credentials are stored in `config.py`
+By default there's only one Admin user, default credentials are stored in [config.py](config.py#L11)
 
-If you want to change those, a new Admin will be created using these ENV:
+If you want to change those, a [new Admin](https://github.com/redhat-scholars/devnation-labs-dashboard/blob/master/app.py#L331) will be created using these ENV:
 
 - `ADMIN_USER`: some email used as username
 - `ADMIN_PASS`: some pass
