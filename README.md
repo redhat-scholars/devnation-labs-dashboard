@@ -72,6 +72,11 @@ docker run -e DB_USER="mariadb" -e DB_PASS="mariadb" -e DB_HOST="<SERVICE_OR_LAN
 
 ## OpenShift
 
+NOTE: You should change the `SECRET_KEY` from [config.py](config.py#L6), which defaults to a Dev-only one. For Prod envs, you can generate a new one with this command:
+```
+python -c "import os; print(os.urandom(24).hex())"
+```
+
 ### Create a new project
 
 ```
