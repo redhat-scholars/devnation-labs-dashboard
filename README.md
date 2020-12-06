@@ -89,15 +89,6 @@ oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mar
 
 Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
 
-#### Generate Session Secret Key
-
-
-You should avoid using default `SECRET_KEY` from [config.py](config.py#L6), which defaults to a Dev-only one. For Prod envs, you can generate a new one with this command:
-
-```
-export SECRET_KEY=`python -c "import os; print(os.urandom(24).hex())"`
-```
-
 #### ENV vars as parameters to the Deployment
 
 
@@ -114,6 +105,15 @@ List of variables to use for a deployment:
 | `ADMIN_USER`  | `admin@email.tld`  | Default admin username **CHANGE IT**
 | `ADMIN_PASS`  | `_some_difficult_pass@`  | Default admin password **CHANGE IT**
 | `SECRET_KEY`  | `2621a03cd4e5881cac070d675dac75d2d973c46f466aa1b5`  | Default secret key **CHANGE IT**
+
+#### Generate Session Secret Key
+
+
+You should avoid using default `SECRET_KEY` from [config.py](config.py#L6), which defaults to a Dev-only one. For Prod envs, you can generate a new one with this command:
+
+```
+export SECRET_KEY=`python -c "import os; print(os.urandom(24).hex())"`
+```
 
 #### oc new-app
 
