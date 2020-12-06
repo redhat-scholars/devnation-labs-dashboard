@@ -91,11 +91,29 @@ Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
 
 #### Generate Session Secret Key
 
+
 You should avoid using default `SECRET_KEY` from [config.py](config.py#L6), which defaults to a Dev-only one. For Prod envs, you can generate a new one with this command:
 
 ```
 export SECRET_KEY=`python -c "import os; print(os.urandom(24).hex())"`
 ```
+
+#### ENV vars as parameters to the Deployment
+
+
+Default parameters are stored as ENV vars in [config.py](config.py#).
+
+List of variables to use for a deployment:
+
+| ENV | Default value | Description
+| ------------- | ------------- | ------------- |
+| `DB_USER`  | `mariadb`  | MariaDB username
+| `DB_PASS`  | `mariadb`  | MariaDB password
+| `DB_HOST`  | `mariadb`  | MariaDB hostname
+| `DB_NAME`  | `cluster_booking`  | DB name
+| `ADMIN_USER`  | `admin@email.tld`  | Default admin username **CHANGE IT**
+| `ADMIN_PASS`  | `_some_difficult_pass@`  | Default admin password **CHANGE IT**
+| `SECRET_KEY`  | `2621a03cd4e5881cac070d675dac75d2d973c46f466aa1b5`  | Default secret key **CHANGE IT**
 
 #### oc new-app
 
@@ -164,14 +182,14 @@ If you want to change those, a [new Admin](https://github.com/redhat-scholars/de
 
 ### Upload Cluster CSV
 
-Expected min format (can contain more columns, but those are mandatory)
+Expected min format (can contain more columns, but those listed and order is **mandatory**)
 ```
 Cluster ID,Cluster Name,Username,User Password,Login URL,Workshop URL
 ```
 
 ### Upload Registration CSV
 
-Expected min format (can contain more columns, but those are mandatory)
+Expected min format (can contain more columns, but those listed and order is **mandatory**)
 
 ```
 name,email,location,GEO,Company Name,Country,What is your job role/title?
