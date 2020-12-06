@@ -129,10 +129,12 @@ def assign_user():
                     db.session.commit()
                 else:
                     flash('No available clusters for user {} in region {}'.format(email, user.geo))
+                    print('No available clusters for user {} in region {}'.format(email, user.geo))
                     return render_template("user.html")
             return render_template("registration.html", cluster=cluster)
         else:
             flash('User {} not found'.format(email))
+            print('User {} not found'.format(email))
             return render_template("user.html")
 
     except Exception as e:
