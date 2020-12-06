@@ -20,3 +20,10 @@ SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI_TMPL % {
     'name': DB_NAME
 }
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+# Avoids 'MySQL server has gone away' errors
+# https://docs.sqlalchemy.org/en/13/core/pooling.html#pool-disconnects
+SQLALCHEMY_ENGINE_OPTIONS = {
+    "pool_pre_ping": True,
+    "pool_recycle": 3600 
+}
