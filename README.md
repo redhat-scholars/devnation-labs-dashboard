@@ -192,7 +192,7 @@ Cluster ID,Cluster Name,Username,User Password,Login URL,Workshop URL
 Expected min format (can contain more columns, but those listed and order is **mandatory**)
 
 ```
-name,email,location,GEO,Company Name,Country,What is your job role/title?
+name[0],email[1],location[2],GEO[3],Company Name[8],Country[9],What is your job role/title?[10]
 ```
 
 ### Add User manually
