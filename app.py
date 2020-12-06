@@ -120,7 +120,7 @@ def assign_user():
             if not cluster:
                 # EMEA clusters temporarily disabled
                 fixed_geo = "AMER"
-                if user.geo is "APAC":
+                if user.geo == "APAC":
                     fixed_geo = user.geo
                 cluster = Cluster.query.filter_by(geo=fixed_geo, assigned=None).first()
                 if cluster:
