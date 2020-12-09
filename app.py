@@ -105,9 +105,15 @@ def admin():
     db.session.commit()
     clusters = Cluster.query.all()
     users = User.query.all()
+
+    i = 0
+
+    for cluster in clusters:
+        if cluster.assigned is not None:
+            i += 1
     print("Refresh Clusters count: ", len(clusters))
     print("Refresh Users count: ", len(users))
-    return render_template("admin.html", clusters=clusters, users=users)
+    return render_template("admin.html", clusters=clusters, users=users, assigned=i)
 
 @app.route("/user/assign", methods=["POST"])
 def assign_user():
