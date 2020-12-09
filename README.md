@@ -112,7 +112,7 @@ List of variables to use for a deployment:
 You should avoid using default `SECRET_KEY` from [config.py](config.py#L6), which defaults to a Dev-only one. For Prod envs, you can generate a new one with this command:
 
 ```
-export SECRET_KEY=`python -c "import os; print(os.urandom(24).hex())"`
+export SECRET_KEY=`openssl rand -hex 24`
 ```
 
 #### oc new-app
