@@ -3,9 +3,11 @@ import csv
 import codecs
 import csv
 import io
+import xlsxwriter
 
 from re import search
 from os import environ, path
+
 
 
 from flask import Flask
@@ -15,6 +17,7 @@ from flask import redirect
 from flask import flash
 from flask import url_for
 from flask import make_response
+from flask import send_file
 
 
 from flask_sqlalchemy import SQLAlchemy
@@ -327,6 +330,83 @@ def export_csv():
         print(e)
         db.session.rollback()
 
+@app.route("/admin/data/export_xlsx", methods=["GET"])
+@login_required
+def export_xlsx():
+    assigned_clusters_header = ["name","email","location","GEO",
+               "Company Name","Country","What is your job role/title?",
+               "Cluster ID", "Cluster Name","Username","User Password",
+               "Login URL", "Workshop URL"]
+    unused_clusters_header = [ "id", "name"]
+
+    try:
+        results = db.session.execute("""
+            SELECT u.name, u.email, u.location, u.geo, u.company, u.country,
+                u.job_role, c.id, c.name, c.username, c.password, c.login_url, c.workshop_url 
+            FROM cluster c 
+            RIGHT OUTER JOIN user u ON c.assigned=u.email
+            ORDER BY c.name DESC""")
+
+        #si = io.StringIO()
+        from io import BytesIO
+        output = BytesIO()
+        #output = io.StringIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        worksheet_assigned = workbook.add_worksheet('Registered+Assigned')
+        worksheet_unused = workbook.add_worksheet('Unused clusters')
+        
+
+        bold = workbook.add_format({'bold': 1,'font_size':11})
+        worksheet_assigned.set_column(0, 1, 30)
+        worksheet_assigned.set_column(2, 2, 20)
+        worksheet_assigned.set_column(4, 6, 20)
+        worksheet_assigned.set_column(7, 8, 30)
+
+
+        col = 0
+        for item in assigned_clusters_header:
+            worksheet_assigned.write(0, col, item, bold)
+            col += 1
+
+        col = 0
+        for i, row in enumerate(results):
+            worksheet_assigned.write_row(i+1, 0, row)
+            col += 1
+
+        
+        results = db.session.execute("""
+            SELECT id, name 
+            FROM cluster
+            WHERE assigned is NULL 
+            ORDER BY name DESC""")
+        
+        worksheet_unused.set_column(0, 1, 30)
+        
+        col = 0
+        for item in unused_clusters_header:
+            worksheet_unused.write(0, col, item, bold)
+            col += 1
+        
+        col = 0
+        for i, row in enumerate(results):
+            worksheet_unused.write_row(i+1, 0, row)
+            col += 1
+        
+
+        workbook.close()
+
+        output.seek(0)
+
+        filename = "HOWL-{}-ClustersData.xlsx".format(datetime.datetime.now().strftime('%m/%d/%Y'))
+        return send_file(output,
+                         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                         as_attachment=True,
+                         attachment_filename=filename)
+
+    except Exception as e:
+        print("Couldn't export XLSX data")
+        print(e)
+        db.session.rollback()
 
 
 if __name__ == "__main__":
