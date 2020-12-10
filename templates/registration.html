@@ -8,6 +8,11 @@
 <script>
   function copyToClipBoard(id) {
   /* Get the text field */
+  if (id === "password"){
+    passwordInput=document.getElementById(id)
+    passwordInput.type="text"
+
+  }
   var copyText = document.getElementById(id);
 
   /* Select the text field */
@@ -16,6 +21,10 @@
 
   /* Copy the text inside the text field */
   document.execCommand("copy");
+
+  if (id === "password"){
+    passwordInput.type="password"
+  }
 
 }
 </script>
