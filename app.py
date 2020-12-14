@@ -21,6 +21,8 @@ from flask import send_file
 
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
+
 
 #from flask_migrate import Migrate
 
@@ -42,6 +44,12 @@ geo_dict = {}
 geo_dict["AMER"] = ["wdc"]
 geo_dict["EMEA"] = ["fra0","ams0"]
 geo_dict["APAC"] = ["che01"]
+
+geo_twin = {}
+geo_twin["AMER"] = ["EMEA"]
+geo_twin["EMEA"] = ["AMER", "APAC"]
+geo_twin["APAC"] = ["EMEA"]
+
 
 db = SQLAlchemy(app)
 #migrate = Migrate(app, db)
@@ -127,7 +135,12 @@ def assign_user():
             print("User found: " + email)
             cluster = Cluster.query.with_for_update(of=Cluster).populate_existing().filter_by(assigned=email).first()
             if not cluster:
-                cluster =  Cluster.query.with_for_update(of=Cluster).populate_existing().filter_by(geo=user.geo, assigned=None).first()
+                cluster = Cluster.query.with_for_update(of=Cluster).populate_existing().filter_by(assigned=None, geo=user.geo).first()
+
+                if not cluster:
+                    print("Cluster not found in user's region {}, trying in near regions {}".format(user.geo, geo_twin[user.geo]))
+                    cluster =  Cluster.query.with_for_update(of=Cluster).populate_existing().filter(Cluster.assigned==None).filter(or_(Cluster.geo == g for g in geo_twin[user.geo])).first()
+
                 if cluster:
                     cluster.assigned = email
                     print("Assigning Cluster: " + cluster.id + " to user: " + email)
