@@ -119,7 +119,7 @@ export SECRET_KEY=`openssl rand -hex 24`
 
 ```
 oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo -e SECRET_KEY=$SECRET_KEY
-oc create route edge --service=devnation-labs-dashboard --insecure-policy=Redirect 
+oc create route edge get-cluster --service=devnation-labs-dashboard --insecure-policy=Redirect 
 
 ```
 
