@@ -250,7 +250,10 @@ def update():
         assigned = request.form.get("assigned")
         id = request.form.get("id")
         cluster = Cluster.query.filter_by(id=id).first()
-        cluster.assigned = assigned
+        if assigned == "None":
+            cluster.assigned = None
+        else:
+            cluster.assigned = assigned
         db.session.commit()
     except Exception as e:
         print("Couldn't assign cluster {} to {}", id, assigned)
