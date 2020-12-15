@@ -6,6 +6,105 @@ It uses MariaDB as DB.
 
 ![App topology](app.png)
 
+## OpenShift
+
+
+### Create a new project
+
+```
+oc new-project devnation-labs
+```
+
+### Get MariaDB
+
+```
+oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mariadb -p MYSQL_PASSWORD=mariadb -p MYSQL_ROOT_PASSWORD=mariadb -p MYSQL_DATABASE=cluster_booking
+```
+
+### Deploy
+
+Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
+
+#### ENV vars as parameters to the Deployment
+
+
+Default parameters are stored as ENV vars in [config.py](config.py#).
+
+List of variables to use for a deployment:
+
+| ENV | Default value | Description
+| ------------- | ------------- | ------------- |
+| `DB_USER`  | `mariadb`  | MariaDB username
+| `DB_PASS`  | `mariadb`  | MariaDB password
+| `DB_HOST`  | `mariadb`  | MariaDB hostname
+| `DB_NAME`  | `cluster_booking`  | DB name
+| `ADMIN_USER`  | `admin@email.tld`  | Default admin user **CHANGE IT**
+| `ADMIN_PASS`  | `_some_difficult_pass@`  | Default admin pass **CHANGE IT**
+| `SECRET_KEY`  | `2621a03cd4e5881cac070d675dac75d2d973c46f466aa1b5`  | Default secret key **CHANGE IT**
+
+#### Generate Session Secret Key
+
+
+You should avoid using default `SECRET_KEY` from [config.py](config.py#L6), which defaults to a Dev-only one. For Prod envs, you can generate a new one with this command:
+
+```
+export SECRET_KEY=`openssl rand -hex 24`
+```
+
+#### Change Admin user
+
+By default there's only one Admin user, default credentials are stored in [config.py](config.py)
+
+Please change default credentials before deploying the app in Prod:
+
+```
+export ADMIN_USER=<YOUR_CHOICE>
+export ADMIN_PASS=<YOUR_CHOICE>
+```
+
+
+#### Source-2-Image: oc new-app
+
+Just deploy the app in 2 steps.
+
+Create the app:
+
+```
+oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo -e SECRET_KEY=$SECRET_KEY
+```
+
+Expose a secure Route:
+
+```
+oc create route edge get-cluster --service=devnation-labs-dashboard --insecure-policy=Redirect 
+```
+
+Here we go, the Dashboard should be ready in a few seconds!
+
+#### (Optional) Source-2-Image: Upload from local working dir
+
+If you are working locally with the source code, you can upload it to OpenShift and let OpenShift run S2I in this way:
+
+```
+oc new-build --name devnation-labs -i python --binary=true
+oc start-build devnation-labs --from-dir=.
+oc new-app devnation-labs -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo -e SECRET_KEY=$SECRET_KEY
+oc create route edge --service=devnation-labs --insecure-policy=Redirect 
+```
+
+#### (Experimental) Source-2-Image: odo
+
+odo should been able to [link services](https://docs.openshift.com/container-platform/latest/cli_reference/developer_cli_odo/creating-instances-of-services-managed-by-operators.html#listing-available-services-from-the-operators-installed-on-the-cluster_creating-instances-of-services-managed-by-operators) like MariaDB, however there's no MariaDB yet inside OCP OperatorHub.
+
+```
+odo project create devnation-labs
+odo create python --s2i
+odo push
+odo url create --port 8080 --secure
+odo push
+```
+
+
 ## Local Development
 
 
@@ -70,88 +169,7 @@ docker build -f Dockerfile.alpine -t devnation-labs:latest
 docker run -e DB_USER="mariadb" -e DB_PASS="mariadb" -e DB_HOST="<SERVICE_OR_LAN_IP>" -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo -p 8080:8080 -ti devnation-labs
 ```
 
-## OpenShift
 
-
-### Create a new project
-
-```
-oc new-project devnation-labs
-```
-
-### Get MariaDB
-
-```
-oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mariadb -p MYSQL_PASSWORD=mariadb -p MYSQL_ROOT_PASSWORD=mariadb -p MYSQL_DATABASE=cluster_booking
-```
-
-### Deploy
-
-Overriding S2I run script at `.s2i/bin/run` to run migrations and start the app.
-
-#### ENV vars as parameters to the Deployment
-
-
-Default parameters are stored as ENV vars in [config.py](config.py#).
-
-List of variables to use for a deployment:
-
-| ENV | Default value | Description
-| ------------- | ------------- | ------------- |
-| `DB_USER`  | `mariadb`  | MariaDB username
-| `DB_PASS`  | `mariadb`  | MariaDB password
-| `DB_HOST`  | `mariadb`  | MariaDB hostname
-| `DB_NAME`  | `cluster_booking`  | DB name
-| `ADMIN_USER`  | `admin@email.tld`  | Default admin username **CHANGE IT**
-| `ADMIN_PASS`  | `_some_difficult_pass@`  | Default admin password **CHANGE IT**
-| `SECRET_KEY`  | `2621a03cd4e5881cac070d675dac75d2d973c46f466aa1b5`  | Default secret key **CHANGE IT**
-
-#### Generate Session Secret Key
-
-
-You should avoid using default `SECRET_KEY` from [config.py](config.py#L6), which defaults to a Dev-only one. For Prod envs, you can generate a new one with this command:
-
-```
-export SECRET_KEY=`openssl rand -hex 24`
-```
-
-#### oc new-app
-
-```
-oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo -e SECRET_KEY=$SECRET_KEY
-oc create route edge get-cluster --service=devnation-labs-dashboard --insecure-policy=Redirect 
-
-```
-
-#### Upload from local working dir (Optional)
-
-```
-oc new-build --name devnation-labs -i python --binary=true
-oc start-build devnation-labs --from-dir=.
-oc new-app devnation-labs -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo -e SECRET_KEY=$SECRET_KEY
-oc create route edge --service=devnation-labs --insecure-policy=Redirect 
-```
-
-#### odo (Experimental)
-
-odo should been able to [link services](https://docs.openshift.com/container-platform/latest/cli_reference/developer_cli_odo/creating-instances-of-services-managed-by-operators.html#listing-available-services-from-the-operators-installed-on-the-cluster_creating-instances-of-services-managed-by-operators) like MariaDB, however there's no MariaDB yet inside OCP OperatorHub.
-
-```
-odo project create devnation-labs
-odo create python --s2i
-odo push
-odo url create --port 8080 --secure
-odo push
-```
-
-### Admin user
-
-By default there's only one Admin user, default credentials are stored in [config.py](config.py#L11)
-
-If you want to change those, a [new Admin](https://github.com/redhat-scholars/devnation-labs-dashboard/blob/master/app.py#L331) will be created using these ENV:
-
-- `ADMIN_USER`: some email used as username
-- `ADMIN_PASS`: some pass
 
 ## Paths
 
