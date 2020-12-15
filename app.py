@@ -5,8 +5,11 @@ import csv
 import io
 import xlsxwriter
 
+from io import BytesIO
 from re import search
 from os import environ, path
+
+
 
 
 
@@ -360,10 +363,8 @@ def export_xlsx():
             RIGHT OUTER JOIN user u ON c.assigned=u.email
             ORDER BY c.name DESC""")
 
-        #si = io.StringIO()
-        from io import BytesIO
+
         output = BytesIO()
-        #output = io.StringIO()
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         worksheet_assigned = workbook.add_worksheet('Registered+Assigned')
         worksheet_unused = workbook.add_worksheet('Unused clusters')
