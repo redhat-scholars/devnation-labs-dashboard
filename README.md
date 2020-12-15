@@ -70,7 +70,7 @@ Just deploy the app in 2 steps.
 Create the app:
 
 ```
-oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=foo@web.tld -e ADMIN_PASS=foo -e SECRET_KEY=$SECRET_KEY
+oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=$ADMIN_USER -e ADMIN_PASS=$ADMIN_PASS -e SECRET_KEY=$SECRET_KEY
 ```
 
 Expose a secure Route:
