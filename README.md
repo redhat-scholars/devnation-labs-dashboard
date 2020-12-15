@@ -18,7 +18,8 @@ oc new-project devnation-labs
 ### Get MariaDB
 
 ```
-oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mariadb -p MYSQL_PASSWORD=mariadb -p MYSQL_ROOT_PASSWORD=mariadb -p MYSQL_DATABASE=cluster_booking -l app.kubernetes.io/name=mariadb
+oc new-app mariadb-persistent -p DATABASE_SERVICE_NAME=mariadb -p MYSQL_USER=mariadb -p MYSQL_PASSWORD=mariadb -p MYSQL_ROOT_PASSWORD=mariadb -p MYSQL_DATABASE=cluster_booking -l 'app.kubernetes.io/name=mariadb,app.kubernetes.io/part-of=labs-dashboard'
+ 
 ```
 
 ### Deploy
@@ -70,7 +71,7 @@ Just deploy the app in 2 steps.
 Create the app:
 
 ```
-oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=$ADMIN_USER -e ADMIN_PASS=$ADMIN_PASS -e SECRET_KEY=$SECRET_KEY -l app.kubernetes.io/name=python
+oc new-app https://github.com/redhat-scholars/devnation-labs-dashboard.git -e DB_USER=mariadb -e DB_PASS=mariadb -e DB_HOST=mariadb -e DB_NAME=cluster_booking -e ADMIN_USER=$ADMIN_USER -e ADMIN_PASS=$ADMIN_PASS -e SECRET_KEY=$SECRET_KEY -l 'app.kubernetes.io/name=python,app.kubernetes.io/part-of=labs-dashboard'
 ```
 
 Expose a secure Route:
@@ -80,6 +81,25 @@ oc create route edge get-cluster --service=devnation-labs-dashboard --insecure-p
 ```
 
 Here we go, the Dashboard should be ready in a few seconds!
+
+#### Edit from Eclipse Che
+
+If you are running on a cluster with [CodeReadyWorkspaces](https://developers.redhat.com/products/codeready-workspaces/overview) like [Developer Sandbox](https://developers.redhat.com/developer-sandbox), you can start editing it directly from there.
+
+Just annotate the Deployment for that:
+
+````
+oc annotate deployments devnation-labs-dashboard app.openshift.io/vcs-uri='https://github.com/redhat-scholars/devnation-labs-dashboard.git'
+oc annotate deployments devnation-labs-dashboard app.openshift.io/vcs-ref='master'
+````
+
+Or Run it with [Eclipse Che Factories](https://developers.redhat.com/che/creating-factories):
+
+NOTE: Change the address of Factory with your CRW URL
+
+[![Contribute](https://raw.githubusercontent.com/blues-man/nodejs-mongodb-sample/master/factory-contribute.svg)](https://codeready-openshift-workspaces.apps.crc.testing/factory?url=https://github.com/redhat-scholars/devnation-labs-dashboard.git)
+
+
 
 #### (Optional) Source-2-Image: Upload from local working dir
 
