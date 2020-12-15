@@ -36,7 +36,7 @@ commands:
       -
         type: exec
         component: python
-        command: '. ${CHE_PROJECTS_ROOT}/.venv/bin/activate &&  flask db init && flask db migrate && flask db upgrade'
+        command: '. ${CHE_PROJECTS_ROOT}/.venv/bin/activate && python manage.py db init &&  python manage.py db migrate && python manage.py db upgrade'
         workdir: '${CHE_PROJECTS_ROOT}/devnation-labs-dashboard'
   - 
     name: run app
@@ -44,7 +44,7 @@ commands:
       -
         type: exec
         component: python
-        command: '. ${CHE_PROJECTS_ROOT}/.venv/bin/activate && export DEBUG_MODE=False && flask run'
+        command: '. ${CHE_PROJECTS_ROOT}/.venv/bin/activate && export DEBUG_MODE=False && python app.py'
         workdir: '${CHE_PROJECTS_ROOT}/devnation-labs-dashboard'
   - 
     name: run server in debug mode
@@ -52,7 +52,7 @@ commands:
       -
         type: exec
         component: python
-        command: '. ${CHE_PROJECTS_ROOT}/.venv/bin/activate &&  export DEBUG_MODE=True && flask run'
+        command: '. ${CHE_PROJECTS_ROOT}/.venv/bin/activate &&  export DEBUG_MODE=True && python app.py'
         workdir: '${CHE_PROJECTS_ROOT}/devnation-labs-dashboard'
   - 
     name: debug
