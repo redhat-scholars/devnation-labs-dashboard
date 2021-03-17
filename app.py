@@ -224,11 +224,11 @@ def upload_user():
             i = 0
             for row in csv.reader(stream, dialect=csv.excel):
                 if i > 0 and row:
-                    if row[1] != '' and row[3] != '':
+                    if row[1] != '' and row[18] != '':
                         try:
                             user = User(email=row[1],
                                         name=row[0],
-                                        geo=row[3],
+                                        geo=row[18],
                                         location=row[2],
                                         company=row[8],
                                         country=row[9],
