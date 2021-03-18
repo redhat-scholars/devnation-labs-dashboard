@@ -230,9 +230,9 @@ def upload_user():
                                         name=row[0],
                                         geo=row[18],
                                         location=row[2],
-                                        company=row[8],
-                                        country=row[9],
-                                        job_role=row[10])
+                                        company=row[7],
+                                        country=row[8],
+                                        job_role=row[9])
                             db.session.add(user)
                             db.session.commit()
                         except Exception as e:
