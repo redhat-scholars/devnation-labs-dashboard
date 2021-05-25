@@ -226,13 +226,13 @@ def upload_user():
                 if i > 0 and row:
                     if row[1] != '' and row[18] != '':
                         try:
-                            user = User(email=row[1],
-                                        name=row[0],
-                                        geo=row[18],
-                                        location=row[2],
-                                        company=row[7],
-                                        country=row[8],
-                                        job_role=row[9])
+                            user = User(email=row[0],
+                                        name=row[1],
+                                        geo=row[4],
+                                        location=row[3],
+                                        company=row[11],
+                                        country=row[12],
+                                        job_role=row[13])
                             db.session.add(user)
                             db.session.commit()
                         except Exception as e:
